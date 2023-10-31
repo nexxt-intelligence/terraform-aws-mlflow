@@ -79,7 +79,8 @@ resource "aws_ecs_task_definition" "mlflow" {
   container_definitions = jsonencode(concat([
     {
       name      = "mlflow"
-      image     = "larribas/mlflow:${var.service_image_tag}"
+      # If var.service_image_repository is declared, use that. Otherwise, use the default image.
+      image     = var.service_image_repository != "larribas/mlflow" ? "${var.service_image_repository}:latest" : "larribas/mlflow:${var.service_image_tag}"
       essential = true
 
       # As of version 1.9.1, MLflow doesn't support specifying the backend store uri as an environment variable. ECS doesn't allow evaluating secret environment variables from within the command. Therefore, we are forced to override the entrypoint and assume the docker image has a shell we can use to interpolate the secret at runtime.
@@ -118,7 +119,7 @@ resource "aws_ecs_service" "mlflow" {
   name             = var.unique_name
   cluster          = aws_ecs_cluster.mlflow.id
   task_definition  = aws_ecs_task_definition.mlflow.arn
-  desired_count    = 2
+  desired_count    = 1
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
 
@@ -126,6 +127,7 @@ resource "aws_ecs_service" "mlflow" {
   network_configuration {
     subnets         = var.service_subnet_ids
     security_groups = [aws_security_group.ecs_service.id]
+    assign_public_ip = true
   }
 
   load_balancer {

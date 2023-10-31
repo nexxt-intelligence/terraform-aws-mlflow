@@ -35,10 +35,16 @@ variable "service_subnet_ids" {
   description = "List of subnets where the MLflow ECS service will be deployed (the recommendation is to use subnets that cannot be accessed directly from the Internet)"
 }
 
+variable "service_image_repository" {
+  type        = string
+  default     = "larribas/mlflow"
+  description = "The MLflow Docker image to deploy. If using an ECR repo (will always use `latest` tag), it needs to be created before calling the module. Defaults to larribas/mlflow, which is an OSS image available at https://hub.docker.com/r/larribas/mlflow."
+}
+
 variable "service_image_tag" {
   type        = string
   default     = "1.9.1"
-  description = "The MLflow version to deploy. Note that this version has to be available as a tag here: https://hub.docker.com/r/larribas/mlflow"
+  description = "The MLflow version to deploy. Note that this version has to be available as a tag here: https://hub.docker.com/r/larribas/mlflow & only applies if using this particular OSS image."
 }
 
 variable "service_cpu" {
