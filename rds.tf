@@ -62,7 +62,7 @@ resource "aws_rds_cluster" "backend_store" {
   cluster_identifier_prefix = var.unique_name
   tags                      = local.tags
   engine                    = "aurora-mysql"
-  engine_version            = "5.7.mysql_aurora.2.07.1"
+  engine_version            = "5.7.mysql_aurora.2.11.3"
   engine_mode               = "serverless"
   port                      = local.db_port
   db_subnet_group_name      = aws_db_subnet_group.rds.name
