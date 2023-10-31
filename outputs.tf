@@ -18,6 +18,18 @@ output "cluster_id" {
   value = aws_ecs_cluster.mlflow.id
 }
 
+output "cluster_name" {
+  value = aws_ecs_cluster.mlflow.name
+}
+
+output "service_id" {
+  value = aws_ecs_service.mlflow.id
+}
+
+output "service_name" {
+  value = aws_ecs_service.mlflow.name
+}
+
 output "service_execution_role_id" {
   value = aws_iam_role.ecs_execution.id
 }
