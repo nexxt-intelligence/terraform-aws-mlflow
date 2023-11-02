@@ -70,15 +70,21 @@ variable "service_sidecar_container_definitions" {
   description = "A list of container definitions to deploy alongside the main container. See: https://www.terraform.io/docs/providers/aws/r/ecs_task_definition.html#container_definitions"
 }
 
+variable "service_desired_count" {
+  type        = number
+  default     = 1
+  description = "Desired number of instances for the ecs service. This will create an aws_appautoscaling_target that can later on be used to autoscale the MLflow instance"
+}
+
 variable "service_min_capacity" {
   type        = number
-  default     = 2
+  default     = 1
   description = "Minimum number of instances for the ecs service. This will create an aws_appautoscaling_target that can later on be used to autoscale the MLflow instance"
 }
 
 variable "service_max_capacity" {
   type        = number
-  default     = 2
+  default     = 4
   description = "Maximum number of instances for the ecs service. This will create an aws_appautoscaling_target that can later on be used to autoscale the MLflow instance"
 }
 
