@@ -86,7 +86,7 @@ resource "aws_ecs_task_definition" "mlflow" {
       # As of version 1.9.1, MLflow doesn't support specifying the backend store uri as an environment variable. ECS doesn't allow evaluating secret environment variables from within the command. Therefore, we are forced to override the entrypoint and assume the docker image has a shell we can use to interpolate the secret at runtime.
       entryPoint = ["sh", "-c"]
       command = [
-        "/bin/sh -c \"mlflow server --app-name basic-auth --host=0.0.0.0 --port=${local.service_port} --artifacts-destination=s3://${local.artifact_bucket_id}${var.artifact_bucket_path} --backend-store-uri=mysql+pymysql://${aws_rds_cluster.backend_store.master_username}:`echo -n $DB_PASSWORD`@${aws_rds_cluster.backend_store.endpoint}:${aws_rds_cluster.backend_store.port}/${aws_rds_cluster.backend_store.database_name}\""
+        "/bin/sh -c \"mlflow server --app-name basic-auth --host=0.0.0.0 --port=${local.service_port} --artifacts-destination=s3://${local.artifact_bucket_id} --backend-store-uri=mysql+pymysql://${aws_rds_cluster.backend_store.master_username}:`echo -n $DB_PASSWORD`@${aws_rds_cluster.backend_store.endpoint}:${aws_rds_cluster.backend_store.port}/${aws_rds_cluster.backend_store.database_name}\""
       ]
       portMappings = [{ containerPort = local.service_port }]
       secrets = [
