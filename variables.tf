@@ -128,7 +128,7 @@ variable "artifact_bucket_path" {
 }
 
 variable "artifact_buckets_mlflow_will_read" {
-  description = "A list of bucket IDs MLflow will need read access to, in order to show the stored artifacts. It accepts any valid IAM resource, including ARNs with wildcards, so you can do something like arn:aws:s3:::bucket-prefix-*"
+  description = "A list of bucket IDs MLflow will need read access to, in order to show the stored artifacts. It accepts any valid IAM resource, including ARNs with wildcards, so you can do something like arn:aws:s3:::bucket-*"
   type        = list(string)
   default     = []
 }

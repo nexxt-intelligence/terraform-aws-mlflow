@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "default" {
-  count         = local.create_dedicated_bucket ? 1 : 0
-  bucket_prefix = var.unique_name
-  
+  count  = local.create_dedicated_bucket ? 1 : 0
+  bucket = var.unique_name
+
   tags = merge(
     {
       Name = "${var.unique_name}-default-artifact-root"
@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "default" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "default" {
-  count = local.create_dedicated_bucket ? 1 : 0
+  count  = local.create_dedicated_bucket ? 1 : 0
   bucket = aws_s3_bucket.default[0].id
   rule {
     object_ownership = "BucketOwnerPreferred"
@@ -19,28 +19,28 @@ resource "aws_s3_bucket_ownership_controls" "default" {
 }
 
 resource "aws_s3_bucket_acl" "default" {
-  count = local.create_dedicated_bucket ? 1 : 0
-  bucket = aws_s3_bucket.default[0].id
-  acl = "private"
-  depends_on = [ aws_s3_bucket.default, aws_s3_bucket_ownership_controls.default ]
+  count      = local.create_dedicated_bucket ? 1 : 0
+  bucket     = aws_s3_bucket.default[0].id
+  acl        = "private"
+  depends_on = [aws_s3_bucket.default, aws_s3_bucket_ownership_controls.default]
 }
 
 resource "aws_s3_bucket_versioning" "default" {
-  count = local.create_dedicated_bucket ? 1 : 0
+  count  = local.create_dedicated_bucket ? 1 : 0
   bucket = aws_s3_bucket.default[0].id
   versioning_configuration {
     status = "Enabled"
   }
-  depends_on = [ aws_s3_bucket.default ]
+  depends_on = [aws_s3_bucket.default]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "default" {
-  count = local.create_dedicated_bucket ? 1 : 0
+  count  = local.create_dedicated_bucket ? 1 : 0
   bucket = aws_s3_bucket.default[0].id
 
   rule {
     status = "Enabled"
-    id = "history"
+    id     = "history"
     transition {
       days          = 60
       storage_class = "INTELLIGENT_TIERING"
@@ -49,7 +49,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "default" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
-  count = local.create_dedicated_bucket ? 1 : 0
+  count  = local.create_dedicated_bucket ? 1 : 0
   bucket = aws_s3_bucket.default[0].id
 
   rule {
@@ -61,9 +61,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
 }
 
 resource "aws_iam_role_policy" "default_bucket" {
-  count       = local.create_dedicated_bucket ? 1 : 0
-  name_prefix = "access_to_default_bucket"
-  role        = aws_iam_role.ecs_task.id
+  count = local.create_dedicated_bucket ? 1 : 0
+  name  = "${var.unique_name}-access-to-default-bucket"
+  role  = aws_iam_role.ecs_task.id
 
   policy = jsonencode({
     Version = "2012-10-17"

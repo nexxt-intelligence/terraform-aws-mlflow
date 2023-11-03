@@ -78,7 +78,7 @@ resource "aws_ecs_task_definition" "mlflow" {
   tags   = local.tags
   container_definitions = jsonencode(concat([
     {
-      name      = "mlflow"
+      name = "mlflow"
       # If var.service_image_repository is declared, use that. Otherwise, use the default image.
       image     = var.service_image_repository != "larribas/mlflow" ? "${var.service_image_repository}:latest" : "larribas/mlflow:${var.service_image_tag}"
       essential = true
@@ -125,8 +125,8 @@ resource "aws_ecs_service" "mlflow" {
 
 
   network_configuration {
-    subnets         = var.service_subnet_ids
-    security_groups = [aws_security_group.ecs_service.id]
+    subnets          = var.service_subnet_ids
+    security_groups  = [aws_security_group.ecs_service.id]
     assign_public_ip = true
   }
 

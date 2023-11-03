@@ -8,7 +8,7 @@ resource "random_id" "id" {
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
-  name_prefix = "mlflow-terratest"
+  name = "mlflow-terratest"
 }
 
 resource "aws_secretsmanager_secret_version" "db_password" {

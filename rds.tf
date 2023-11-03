@@ -59,7 +59,7 @@ resource "aws_security_group" "rds" {
 }
 
 resource "aws_rds_cluster" "backend_store" {
-  cluster_identifier_prefix = var.unique_name
+  cluster_identifier        = var.unique_name
   tags                      = local.tags
   engine                    = "aurora-mysql"
   engine_version            = "5.7.mysql_aurora.2.11.3"
