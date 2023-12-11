@@ -144,3 +144,9 @@ variable "artifact_bucket_encryption_key_arn" {
   type        = string
   default     = null
 }
+
+variable "openai_api_key" {
+  description = "OpenAI API key. If specified, it will be passed to the MLflow container as an environment variable"
+  type        = string
+  default     = null
+}

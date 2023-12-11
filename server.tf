@@ -82,19 +82,47 @@ resource "aws_ecs_task_definition" "mlflow" {
       # If var.service_image_repository is declared, use that. Otherwise, use the default image.
       image     = var.service_image_repository != "larribas/mlflow" ? "${var.service_image_repository}:latest" : "larribas/mlflow:${var.service_image_tag}"
       essential = true
-
-      # As of version 1.9.1, MLflow doesn't support specifying the backend store uri as an environment variable. ECS doesn't allow evaluating secret environment variables from within the command. Therefore, we are forced to override the entrypoint and assume the docker image has a shell we can use to interpolate the secret at runtime.
       entryPoint = ["sh", "-c"]
-      command = [
-        "/bin/sh -c \"mlflow server --app-name basic-auth --host=0.0.0.0 --port=${local.service_port} --artifacts-destination=s3://${local.artifact_bucket_id} --backend-store-uri=mysql+pymysql://${aws_rds_cluster.backend_store.master_username}:`echo -n $DB_PASSWORD`@${aws_rds_cluster.backend_store.endpoint}:${aws_rds_cluster.backend_store.port}/${aws_rds_cluster.backend_store.database_name}\""
+      command = ["./entrypoint.sh"]
+      environment = [
+        {
+          name = "OPENAI_API_KEY",
+          value = "${var.openai_api_key}"
+        },
+        {
+          name = "DB_PASSWORD",
+          value = "${data.aws_secretsmanager_secret_version.db_password.secret_string}"
+        },
+        {
+          name = "DB_USERNAME",
+          value = "${aws_rds_cluster.backend_store.master_username}"
+        },
+        {
+          name = "DB_PORT",
+          value = "${tostring(aws_rds_cluster.backend_store.port)}"
+        },
+        {
+          name = "DB_HOST",
+          value = "${aws_rds_cluster.backend_store.endpoint}"
+        },
+        {
+          name = "DB_NAME",
+          value = "${aws_rds_cluster.backend_store.database_name}"
+        },
+        {
+          name = "SERVICE_PORT",
+          value = "${tostring(local.service_port)}"
+        },
+        {
+          name = "HOSTNAME",
+          value = "0.0.0.0"
+        },
+        {
+          name = "ARTIFACTS_DESTINATION",
+          value = "s3://${local.artifact_bucket_id}"
+        }
       ]
       portMappings = [{ containerPort = local.service_port }]
-      secrets = [
-        {
-          name      = "DB_PASSWORD"
-          valueFrom = data.aws_secretsmanager_secret.db_password.arn
-        },
-      ]
       logConfiguration = {
         logDriver     = "awslogs"
         secretOptions = null
